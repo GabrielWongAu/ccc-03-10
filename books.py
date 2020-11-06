@@ -1,16 +1,8 @@
-from dotenv import load_dotenv
-load_dotenv()
-
 from database import connection, cursor
+from flask import Blueprint, request, jsonify
+books = Blueprint('books', __name__, url_prefix="")
 
-from flask import Flask
-app = Flask(__name__)
-from books import books
-app.register_blueprint(books)
-
-
-
-@app.route("/books", methods=["GET"])
+@app.route("/", methods=["GET"])
 def book_index():
     #Return all books
     sql = "SELECT * FROM books"
@@ -18,7 +10,7 @@ def book_index():
     books = cursor.fetchall()
     return jsonify(books)
 
-@app.route("/books", methods=["POST"])
+@app.route("/", methods=["POST"])
 def book_create():
     #Create a new book
     sql = "INSERT INTO books (title) VALUES (%s);"
@@ -30,7 +22,7 @@ def book_create():
     book = cursor.fetchone()
     return jsonify(book)
 
-@app.route("/books/<int:id>", methods=["GET"])
+@app.route("/<int:id>", methods=["GET"])
 def book_show(id):
     #Return a single book
     sql = "SELECT * FROM books WHERE id = %s;"
@@ -38,7 +30,7 @@ def book_show(id):
     book = cursor.fetchone()
     return jsonify(book)
 
-@app.route("/books/<int:id>", methods=["PUT", "PATCH"])
+@app.route("/<int:id>", methods=["PUT", "PATCH"])
 def book_update(id):
     #Update a book
     sql = "UPDATE books SET title = %s WHERE id = %s;"
@@ -50,7 +42,7 @@ def book_update(id):
     book = cursor.fetchone()
     return jsonify(book)
 
-@app.route("/books/<int:id>", methods=["DELETE"])
+@app.route("/<int:id>", methods=["DELETE"])
 def book_delete(id):
     sql = "SELECT * FROM books WHERE id = %s;"
     cursor.execute(sql, (id,))
